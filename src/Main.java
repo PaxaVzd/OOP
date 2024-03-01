@@ -66,15 +66,24 @@ public class Main {
      */
     private static void assignEmployeeToPosition(Scanner scanner, List<Employee> employees) {
         System.out.print("Введіть номер працівника (1-5): ");
-        int employeeIndex = scanner.nextInt() - 1;
-        if (employeeIndex >= 0 && employeeIndex < employees.size()) {
-            System.out.print("Введіть посаду: ");
-            scanner.nextLine(); // Очищення буфера
-            String position = scanner.nextLine();
-            employees.get(employeeIndex).assignToPosition(position);
-        } else {
-            System.out.println("Неправильний номер працівника.");
+        int employeeIndex;
+        while (true) {
+            if (scanner.hasNextInt()) {
+                employeeIndex = scanner.nextInt() - 1;
+                if (employeeIndex >= 0 && employeeIndex < employees.size()) {
+                    break;
+                } else {
+                    System.out.println("Неправильний номер працівника. Спробуйте ще раз: ");
+                }
+            } else {
+                System.out.println("Введено неправильний формат. Спробуйте ще раз: ");
+                scanner.next(); // Потрібно видалити неправильний ввід з буфера
+            }
         }
+        System.out.print("Введіть посаду: ");
+        scanner.nextLine();
+        String position = scanner.nextLine();
+        employees.get(employeeIndex).assignToPosition(position);
     }
 
     /**
@@ -86,22 +95,49 @@ public class Main {
      */
     private static void addProfessionToEmployee(Scanner scanner, List<Employee> employees, Profession[] availableProfessions) {
         System.out.print("Введіть номер працівника (1-5): ");
-        int addEmployeeIndex = scanner.nextInt() - 1;
-        if (addEmployeeIndex >= 0 && addEmployeeIndex < employees.size()) {
-            System.out.println("Доступні професії:");
-            for (int i = 0; i < availableProfessions.length; i++) {
-                System.out.println((i + 1) + ". " + availableProfessions[i].getClass().getSimpleName());
-            }
-            System.out.print("Виберіть номер професії для додавання: ");
-            int professionChoice = scanner.nextInt();
-            if (professionChoice >= 1 && professionChoice <= availableProfessions.length) {
-                employees.get(addEmployeeIndex).addProfession(availableProfessions[professionChoice - 1]);
-                System.out.println("Професія успішно додана.");
+        int addEmployeeIndex;
+        while (true) {
+            if (scanner.hasNextInt()) {
+                addEmployeeIndex = scanner.nextInt() - 1;
+                if (addEmployeeIndex >= 0 && addEmployeeIndex < employees.size()) {
+                    break;
+                } else {
+                    System.out.println("Неправильний номер працівника. Спробуйте ще раз: ");
+                }
             } else {
-                System.out.println("Неправильний вибір професії.");
+                System.out.println("Введено неправильний формат. Спробуйте ще раз: ");
+                scanner.next(); // Потрібно видалити неправильний ввід з буфера
             }
+        }
+
+        System.out.println("Доступні професії:");
+        for (int i = 0; i < availableProfessions.length; i++) {
+            System.out.println((i + 1) + ". " + availableProfessions[i].getClass().getSimpleName());
+        }
+
+        System.out.print("Виберіть номер професії для додавання: ");
+        int professionChoice;
+        while (true) {
+            if (scanner.hasNextInt()) {
+                professionChoice = scanner.nextInt();
+                if (professionChoice >= 1 && professionChoice <= availableProfessions.length) {
+                    break;
+                } else {
+                    System.out.println("Неправильний вибір професії. Спробуйте ще раз: ");
+                }
+            } else {
+                System.out.println("Введено неправильний формат. Спробуйте ще раз: ");
+                scanner.next(); // Потрібно видалити неправильний ввід з буфера
+            }
+        }
+
+        // Перевірка на однакові професії
+        List<Profession> existingProfessions = employees.get(addEmployeeIndex).getProfessions();
+        if (existingProfessions.contains(availableProfessions[professionChoice - 1])) {
+            System.out.println("Цей працівник вже має таку професію.");
         } else {
-            System.out.println("Неправильний номер працівника.");
+            employees.get(addEmployeeIndex).addProfession(availableProfessions[professionChoice - 1]);
+            System.out.println("Професія успішно додана.");
         }
     }
 
@@ -113,27 +149,48 @@ public class Main {
      */
     private static void removeProfessionFromEmployee(Scanner scanner, List<Employee> employees) {
         System.out.print("Введіть номер працівника (1-5): ");
-        int removeEmployeeIndex = scanner.nextInt() - 1;
-        if (removeEmployeeIndex >= 0 && removeEmployeeIndex < employees.size()) {
-            List<Profession> professions = employees.get(removeEmployeeIndex).getProfessions();
-            if (!professions.isEmpty()) {
-                System.out.println("Поточні професії працівника:");
-                for (int i = 0; i < professions.size(); i++) {
-                    System.out.println((i + 1) + ". " + professions.get(i).getClass().getSimpleName());
-                }
-                System.out.print("Виберіть номер професії для видалення: ");
-                int removeProfessionIndex = scanner.nextInt() - 1;
-                if (removeProfessionIndex >= 0 && removeProfessionIndex < professions.size()) {
-                    employees.get(removeEmployeeIndex).removeProfession(professions.get(removeProfessionIndex));
-                    System.out.println("Професія успішно видалена.");
+        int removeEmployeeIndex;
+        while (true) {
+            if (scanner.hasNextInt()) {
+                removeEmployeeIndex = scanner.nextInt() - 1;
+                if (removeEmployeeIndex >= 0 && removeEmployeeIndex < employees.size()) {
+                    break;
                 } else {
-                    System.out.println("Неправильний номер професії.");
+                    System.out.println("Неправильний номер працівника. Спробуйте ще раз: ");
                 }
             } else {
-                System.out.println("У цього працівника немає професій для видалення.");
+                System.out.println("Введено неправильний формат. Спробуйте ще раз: ");
+                scanner.next();
             }
+        }
+
+        List<Profession> professions = employees.get(removeEmployeeIndex).getProfessions();
+        if (!professions.isEmpty()) {
+            System.out.println("Поточні професії працівника:");
+            for (int i = 0; i < professions.size(); i++) {
+                System.out.println((i + 1) + ". " + professions.get(i).getClass().getSimpleName());
+            }
+
+            System.out.print("Виберіть номер професії для видалення: ");
+            int removeProfessionIndex;
+            while (true) {
+                if (scanner.hasNextInt()) {
+                    removeProfessionIndex = scanner.nextInt() - 1;
+                    if (removeProfessionIndex >= 0 && removeProfessionIndex < professions.size()) {
+                        break;
+                    } else {
+                        System.out.println("Неправильний номер професії. Спробуйте ще раз: ");
+                    }
+                } else {
+                    System.out.println("Введено неправильний формат. Спробуйте ще раз: ");
+                    scanner.next();
+                }
+            }
+
+            employees.get(removeEmployeeIndex).removeProfession(professions.get(removeProfessionIndex));
+            System.out.println("Професія успішно видалена.");
         } else {
-            System.out.println("Неправильний номер працівника.");
+            System.out.println("У цього працівника немає професій для видалення.");
         }
     }
 
